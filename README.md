@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RecetarIA
 
-## Getting Started
+Aplicación web de sugerencias de recetas con IA.
 
-First, run the development server:
+Versión actual: `v0.2.0`
+
+## Stack técnico
+
+- Framework: Next.js 16 (App Router) + React 19 + TypeScript
+- Estilos: Tailwind CSS v4
+- UI base: shadcn/ui
+- Pruebas: Vitest + jsdom
+- Tooling adicional: Vite (soporte para tooling de test)
+
+## Rutas actuales
+
+- `/` Landing
+- `/login` Inicio de sesión
+- `/app` Vista principal de recetas
+- `/app/ajustes` Configuración (OpenRouter API Key y modelo)
+
+## Estructura relevante
+
+- `src/app/layout.tsx`: layout global
+- `src/app/app/layout.tsx`: layout compartido del área `/app`
+- `src/app/app/components/app-header.tsx`: header compartido en `/app/*`
+- `src/app/app/components/app-footer.tsx`: footer/nav móvil compartido en `/app/*`
+- `src/app/app/app.data.ts`: navegación y datos de ejemplo
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
+npm run lint
+npm run test
+npm run test:watch
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuración de IA
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+La vista de ajustes (`/app/ajustes`) incluye:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- API KEY de OpenRouter (string)
+- Modelo de OpenRouter (string)
+- Botón Guardar
 
-## Learn More
+Actualmente los valores se capturan en UI y no se persisten en backend.
 
-To learn more about Next.js, take a look at the following resources:
+## Versionado
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Este proyecto usa SemVer (`MAJOR.MINOR.PATCH`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Versión en `package.json`: `0.2.0`
+- Versión documentada en este `README.md`: `v0.2.0`
+- Versión visible en footer de `/app`: `v0.2.0`

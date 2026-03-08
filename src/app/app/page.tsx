@@ -96,7 +96,7 @@ export default function AppPage() {
                       {card.time}
                     </span>
                   </div>
-                  <h4 className="mb-1 font-bold text-slate-900 transition-colors group-hover:text-primary dark:text-slate-100">
+                  <h4 className="text-lg mb-1 font-bold text-slate-900 transition-colors group-hover:text-primary dark:text-slate-100">
                     {card.title}
                   </h4>
                   <p className="line-clamp-2 text-sm text-slate-500 dark:text-slate-400">{card.description}</p>
