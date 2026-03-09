@@ -1,13 +1,77 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 
 export default function AjustesPage() {
   const [apiKey, setApiKey] = useState("")
   const [model, setModel] = useState("")
+  const [status, setStatus] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadSettings() {
+      try {
+        const response = await fetch("/api/user/openrouter", { cache: "no-store" })
+        if (!response.ok) {
+          throw new Error("No se pudo cargar la configuración")
+        }
+
+        const payload = (await response.json()) as { apiKey?: string; model?: string }
+
+        if (!isMounted) {
+          return
+        }
+
+        setApiKey(payload.apiKey ?? "")
+        setModel(payload.model ?? "")
+      } catch {
+        if (!isMounted) {
+          return
+        }
+
+        setStatus("No se pudo cargar tu configuración actual.")
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadSettings()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    setStatus("")
+    setIsSaving(true)
+
+    try {
+      const response = await fetch("/api/user/openrouter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ apiKey, model }),
+      })
+
+      if (!response.ok) {
+        throw new Error("No se pudo guardar la configuración")
+      }
+
+      setStatus("Configuración guardada.")
+    } catch {
+      setStatus("No se pudo guardar. Inténtalo de nuevo.")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -34,6 +98,7 @@ export default function AjustesPage() {
             placeholder="sk-or-v1-..."
             type="text"
             value={apiKey}
+            disabled={isLoading || isSaving}
           />
         </div>
 
@@ -51,15 +116,19 @@ export default function AjustesPage() {
             placeholder="openai/gpt-4.1-mini"
             type="text"
             value={model}
+            disabled={isLoading || isSaving}
           />
         </div>
 
         <button
           className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           type="submit"
+          disabled={isLoading || isSaving}
         >
-          Guardar
+          {isSaving ? "Guardando..." : "Guardar"}
         </button>
+
+        {status ? <p className="text-sm text-slate-500 dark:text-slate-400">{status}</p> : null}
       </form>
     </main>
   )

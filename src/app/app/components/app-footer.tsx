@@ -33,7 +33,7 @@ export function AppFooter() {
         className="mx-auto mt-20 mb-20 max-w-4xl border-t border-slate-50 px-6 py-12 text-center text-sm text-slate-400 dark:border-slate-900 dark:text-slate-600 md:mb-0"
         style={{ fontFamily: "var(--font-andada-pro), serif" }}
       >
-        <p>© 2026 RecetarIA v0.2.0. Construido con minimalismo en mente.</p>
+        <p>© 2026 RecetarIA v0.3.0. Construido con minimalismo en mente.</p>
       </footer>
     </>
   )
