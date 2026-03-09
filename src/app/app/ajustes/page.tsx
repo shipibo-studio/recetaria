@@ -1,6 +1,7 @@
 "use client"
 
 import { FormEvent, useEffect, useState } from "react"
+import { SkeletonLoader } from "@/components/ui/loader"
 
 export default function AjustesPage() {
   const [apiKey, setApiKey] = useState("")
@@ -83,7 +84,10 @@ export default function AjustesPage() {
         </p>
       </header>
 
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      {isLoading ? (
+        <SkeletonLoader />
+      ) : (
+        <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label
             className="text-sm font-semibold uppercase tracking-wider text-slate-500"
@@ -130,6 +134,7 @@ export default function AjustesPage() {
 
         {status ? <p className="text-sm text-slate-500">{status}</p> : null}
       </form>
+      )}
     </main>
   )
 }
