@@ -22,7 +22,7 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md dark:border-slate-800 dark:bg-background/80">
+    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
         <Link className="flex items-center gap-2" href="/app">
           <div className="flex items-center justify-center rounded bg-primary p-1.5 text-primary-foreground">
@@ -31,7 +31,7 @@ export function AppHeader() {
           <span className="text-lg font-bold tracking-tight">RecetarIA</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400 md:flex">
+        <nav className="hidden items-center gap-6 text-sm font-medium text-slate-500 md:flex">
           {appDesktopNav.map((item) => {
             const isActive = item.href !== "#" && pathname === item.href
 
@@ -51,7 +51,7 @@ export function AppHeader() {
             <button
               onClick={handleSignOut}
               title="Cerrar sesión"
-              className="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50"
+              className="flex items-center gap-2 rounded-md px-3 py-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

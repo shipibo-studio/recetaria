@@ -29,6 +29,14 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Archivo:wght@300&family=Andada+Pro:ital,wght@1,700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
