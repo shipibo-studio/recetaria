@@ -1,14 +1,87 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { FormEvent, useMemo, useState } from "react"
+import { Loader } from "@/components/ui/loader"
+import { Typewriter } from "@/components/ui/typewriter"
 
 import { recipeCards, skillLevels } from "./app.data"
 import styles from "./app.module.css"
 
+const LOADING_PHRASES = [
+  "La IA está creando recetas personalizadas para ti...",
+  "Analizando las mejores combinaciones de ingredientes...",
+  "Buscando recetas que se adapten a tu nivel de habilidad...",
+  "Generando instrucciones paso a paso para cada receta...",
+  "Calculando tiempos de preparación y niveles de dificultad...",
+  "Seleccionando las recetas más deliciosas para ti...",
+  "Optimizando las proporciones y técnicas culinarias..."
+]
+
+const SERVINGS_OPTIONS = [1, 2, 4]
+
+interface AIRecipe {
+  title: string
+  description: string
+  level: string
+  time: string
+  ingredients: string[]
+  instructions: string[]
+}
+
 export default function AppPage() {
   const [selectedSkill, setSelectedSkill] = useState(skillLevels[0])
+  const [servings, setServings] = useState(1)
+  const [ingredients, setIngredients] = useState("")
+  const [aiRecipes, setAiRecipes] = useState<AIRecipe[]>([])
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [error, setError] = useState("")
+  const [hasGenerated, setHasGenerated] = useState(false)
 
-  const resultsLabel = useMemo(() => `${recipeCards.length + 1} resultados`, [])
+  const resultsLabel = useMemo(() => {
+    const total = hasGenerated ? aiRecipes.length : recipeCards.length + 1
+    return `${total} resultado${total !== 1 ? 's' : ''}`
+  }, [hasGenerated, aiRecipes.length])
+
+  async function handleGenerateRecipes(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    
+    if (!ingredients.trim()) {
+      setError("Por favor ingresa tus ingredientes")
+      return
+    }
+
+    setError("")
+    setIsGenerating(true)
+    setHasGenerated(false)
+
+    try {
+      const response = await fetch("/api/recipes/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ingredients: ingredients.trim(),
+          skillLevel: selectedSkill,
+          servings: servings,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || "Error al generar recetas")
+      }
+
+      const data = await response.json()
+      setAiRecipes(data.recipes || [])
+      setHasGenerated(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al generar recetas")
+      setHasGenerated(false)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12 md:py-20">
@@ -19,20 +92,23 @@ export default function AppPage() {
           </p>
         </div>
 
-        <div className="space-y-8">
+        <form onSubmit={handleGenerateRecipes} className="space-y-8">
           <div className="space-y-3">
             <label className="text-sm font-semibold uppercase tracking-wider text-slate-400">
               Ingredientes disponibles
             </label>
             <div className="relative">
               <textarea
+                value={ingredients}
+                onChange={(e) => setIngredients(e.target.value)}
                 className="min-h-[140px] w-full resize-none rounded-lg border border-slate-200 bg-white p-5 text-lg outline-none transition-all placeholder:text-slate-300 focus:border-primary focus:ring-1 focus:ring-primary"
                 placeholder="Ej: tomate, albahaca, pasta, ajo, aceite de oliva..."
+                disabled={isGenerating}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-2">
+          <div className="grid grid-cols-1 items-end gap-6 md:grid-cols-3">
             <div className="space-y-3">
               <label className="text-sm font-semibold uppercase tracking-wider text-slate-400">
                 Nivel de habilidad
@@ -51,6 +127,7 @@ export default function AppPage() {
                       }`}
                       onClick={() => setSelectedSkill(level)}
                       type="button"
+                      disabled={isGenerating}
                     >
                       {level}
                     </button>
@@ -59,57 +136,167 @@ export default function AppPage() {
               </div>
             </div>
 
-            <button className="flex h-[54px] w-full items-center justify-center gap-2 rounded-lg bg-primary font-semibold text-primary-foreground shadow-lg transition-all hover:opacity-90">
-              <span>Generar recetas</span>
-              <span>✨</span>
+            <div className="space-y-3">
+              <label className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+                Comensales
+              </label>
+              <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1">
+                {SERVINGS_OPTIONS.map((option) => {
+                  const isActive = servings === option
+
+                  return (
+                    <button
+                      key={option}
+                      className={`flex-1 rounded px-3 py-2 text-sm font-medium transition-all ${
+                        isActive
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-slate-900"
+                      }`}
+                      onClick={() => setServings(option)}
+                      type="button"
+                      disabled={isGenerating}
+                    >
+                      {option} {option === 1 ? 'persona' : 'personas'}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <button 
+              type="submit"
+              disabled={isGenerating}
+              className="flex h-[54px] w-full items-center justify-center gap-2 rounded-lg bg-primary font-semibold text-primary-foreground shadow-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGenerating ? (
+                <>
+                  <span>Generando...</span>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                </>
+              ) : (
+                <>
+                  <span>Generar recetas</span>
+                  <span>✨</span>
+                </>
+              )}
             </button>
           </div>
-        </div>
 
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+        </form>
+
+        {isGenerating && (
+          <div className="mt-24">
+            <Loader />
+            <Typewriter 
+              phrases={LOADING_PHRASES}
+              interval={10000}
+              typingSpeed={50}
+              className="mt-4 text-center text-sm text-slate-500"
+            />
+          </div>
+        )}
+
+        {!isGenerating && (
         <div className="mt-24 space-y-8">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h3 className="text-xl font-bold">Recetas sugeridas</h3>
+            <h3 className="text-xl font-bold">
+              {hasGenerated ? "Recetas generadas por IA" : "Recetas sugeridas"}
+            </h3>
             <span className="rounded bg-slate-100 px-2 py-1 text-xs font-medium uppercase tracking-tighter text-slate-500">
               {resultsLabel}
             </span>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {recipeCards.map((card) => (
-              <article
-                key={card.title}
-                className={`group cursor-pointer overflow-hidden rounded-xl border border-slate-200 transition-all hover:border-primary/50 ${styles.recipeCardShadow}`}
-              >
-                <div className="aspect-video overflow-hidden bg-slate-100">
-                  <img
-                    alt={card.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    src={card.image}
-                  />
-                </div>
-                <div className="p-5">
-                  <div className="mb-2 flex gap-2">
-                    <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-green-700">
-                      {card.level}
-                    </span>
-                    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-500">
-                      {card.time}
-                    </span>
+            {hasGenerated ? (
+              // Mostrar recetas generadas por IA
+              aiRecipes.map((recipe, index) => (
+                <article
+                  key={`${recipe.title}-${index}`}
+                  className={`group cursor-pointer overflow-hidden rounded-xl border border-slate-200 transition-all hover:border-primary/50 ${styles.recipeCardShadow}`}
+                >
+                  <div className="aspect-video overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <span className="text-6xl">🍽️</span>
                   </div>
-                  <h4 className="text-lg mb-1 font-bold text-slate-900 transition-colors group-hover:text-primary">
-                    {card.title}
-                  </h4>
-                  <p className="line-clamp-2 text-sm text-slate-500">{card.description}</p>
-                </div>
-              </article>
-            ))}
+                  <div className="p-5">
+                    <div className="mb-2 flex gap-2">
+                      <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-green-700">
+                        {recipe.level}
+                      </span>
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-500">
+                        {recipe.time}
+                      </span>
+                    </div>
+                    <h4 className="text-lg mb-1 font-bold text-slate-900 transition-colors group-hover:text-primary">
+                      {recipe.title}
+                    </h4>
+                    <p className="line-clamp-2 text-sm text-slate-500">{recipe.description}</p>
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                        Ingredientes principales
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {recipe.ingredients.slice(0, 4).map((ing, i) => (
+                          <span key={i} className="text-xs bg-slate-50 px-2 py-1 rounded text-slate-600">
+                            {ing}
+                          </span>
+                        ))}
+                        {recipe.ingredients.length > 4 && (
+                          <span className="text-xs text-slate-400">
+                            +{recipe.ingredients.length - 4} más
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))
+            ) : (
+              // Mostrar recetas estáticas de ejemplo
+              <>
+                {recipeCards.map((card) => (
+                  <article
+                    key={card.title}
+                    className={`group cursor-pointer overflow-hidden rounded-xl border border-slate-200 transition-all hover:border-primary/50 ${styles.recipeCardShadow}`}
+                  >
+                    <div className="aspect-video overflow-hidden bg-slate-100">
+                      <img
+                        alt={card.title}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        src={card.image}
+                      />
+                    </div>
+                    <div className="p-5">
+                      <div className="mb-2 flex gap-2">
+                        <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-green-700">
+                          {card.level}
+                        </span>
+                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-500">
+                          {card.time}
+                        </span>
+                      </div>
+                      <h4 className="text-lg mb-1 font-bold text-slate-900 transition-colors group-hover:text-primary">
+                        {card.title}
+                      </h4>
+                      <p className="line-clamp-2 text-sm text-slate-500">{card.description}</p>
+                    </div>
+                  </article>
+                ))}
 
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center text-slate-400">
-              <span className="mb-3 text-4xl">➕</span>
-              <p className="text-sm">Procesando más combinaciones...</p>
-            </div>
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center text-slate-400">
+                  <span className="mb-3 text-4xl">➕</span>
+                  <p className="text-sm">Procesando más combinaciones...</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
+        )}
     </main>
   )
 }
