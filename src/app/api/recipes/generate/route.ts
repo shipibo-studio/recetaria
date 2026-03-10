@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     // Construir prompt para OpenRouter
-    const prompt = `Eres un chef profesional experto. Genera exactamente 5 recetas diferentes basadas en los siguientes ingredientes disponibles: ${ingredients}
+    const prompt = `Eres un chef profesional experto. Genera exactamente 6 recetas diferentes basadas en los siguientes ingredientes disponibles: ${ingredients}
 
 El nivel de habilidad del usuario es: ${skillLevel}
 Cantidad de comensales: ${servings} ${servings === 1 ? 'persona' : 'personas'}

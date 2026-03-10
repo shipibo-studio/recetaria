@@ -11,8 +11,8 @@ interface TypewriterProps {
 
 export function Typewriter({ 
   phrases, 
-  interval = 7000, 
-  typingSpeed = 50,
+  interval = 3000, 
+  typingSpeed = 30,
   className = ""
 }: TypewriterProps) {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
