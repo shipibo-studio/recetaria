@@ -1,9 +1,10 @@
 "use client"
 
-import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useParams, useRouter } from "next/navigation"
 
 interface Recipe {
+  id: string
   title: string
   description: string
   level: string
@@ -14,38 +15,65 @@ interface Recipe {
   image?: string
 }
 
-// Por ahora usamos datos de ejemplo
-// Más adelante esto se puede cargar desde localStorage, base de datos, etc.
-const exampleRecipe: Recipe = {
-  title: "Pomodoro clásico",
-  description: "Una salsa italiana simple y auténtica, hecha con ajo fresco y albahaca.",
-  level: "Fácil",
-  time: "15 min",
-  servings: 4,
-  ingredients: [
-    "500g de tomates maduros",
-    "4 dientes de ajo",
-    "1 manojo de albahaca fresca",
-    "3 cucharadas de aceite de oliva virgen extra",
-    "Sal al gusto",
-    "Pimienta negra molida al gusto"
-  ],
-  instructions: [
-    "Lava los tomates y córtalos en cubos pequeños.",
-    "Pela y pica finamente el ajo.",
-    "En una sartén grande, calienta el aceite de oliva a fuego medio.",
-    "Agrega el ajo picado y sofríe durante 1 minuto hasta que esté fragante.",
-    "Añade los tomates picados y cocina durante 10-12 minutos, removiendo ocasionalmente.",
-    "Lava la albahaca, arranca las hojas y agrégalas a la salsa.",
-    "Sazona con sal y pimienta al gusto.",
-    "Sirve caliente sobre pasta recién cocida."
-  ],
-  image: "https://lh3.googleusercontent.com/aida-public/AB6AXuB_1hIVoaHstD63OjGI7VsPtbUIHyYqmSeCxdqaI7iXlhHwGuQ7hQCHaom9rVYzcoZ4iy8wT64XjVSDtKi_bj2jMxo1HbGcdK1iGg1XsJcqn3jTAo4nGk4jI78jL7dV3cUa7Dg5hJ4EXbmJki1gvBNC9xNMBTwdAvklo4MyiqMnL6CfZ8fyLLea5vzNpg2nCrWjWp03yLg_mYB0pxOcPzuSjZygSCzF_IVSfjOWUgAmfHW0BR-PbEe25uoHY73uISzM7rVTxLQnjMhB"
-}
-
 export default function RecipeDetailPage() {
   const router = useRouter()
-  const recipe = exampleRecipe
+  const params = useParams()
+  const [recipe] = useState<Recipe | null>(() => {
+    // Cargar receta sincrónicamente en el estado inicial
+    if (typeof window !== 'undefined') {
+      const recipeId = params.id as string
+      const storedRecipe = localStorage.getItem(recipeId)
+      
+      if (storedRecipe) {
+        try {
+          return JSON.parse(storedRecipe)
+        } catch (error) {
+          console.error("Error parsing recipe:", error)
+        }
+      }
+    }
+    return null
+  })
+
+  const handleBack = () => {
+    router.push('/app')
+  }
+
+  const loading = false
+
+  if (loading) {
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-12">
+        <div className="flex items-center justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        </div>
+      </main>
+    )
+  }
+
+  if (!recipe) {
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-12">
+        <button
+          onClick={handleBack}
+          className="mb-6 flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-primary"
+        >
+          <span>←</span>
+          <span>Volver</span>
+        </button>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
+          <h2 className="mb-2 text-xl font-bold text-red-900">Receta no encontrada</h2>
+          <p className="text-red-600">No se pudo cargar la información de esta receta.</p>
+          <button
+            onClick={handleBack}
+            className="mt-4 rounded-lg bg-primary px-6 py-2 font-medium text-white transition-opacity hover:opacity-90"
+          >
+            Volver a recetas
+          </button>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
@@ -83,18 +111,23 @@ export default function RecipeDetailPage() {
           </div>
         </header>
 
-        {/* Imagen de la receta */}
-        {recipe.image && (
-          <div className="relative h-[400px] w-full overflow-hidden rounded-xl">
-            <Image
-              src={recipe.image}
-              alt={recipe.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 896px"
-            />
-          </div>
-        )}
+        {/* Imagen de la receta o placeholder */}
+        <div className="relative h-[400px] w-full overflow-hidden rounded-xl">
+          {recipe.image ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={recipe.image}
+                alt={recipe.title}
+                className="h-full w-full object-cover"
+              />
+            </>
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <span className="text-9xl">🍽️</span>
+            </div>
+          )}
+        </div>
 
         {/* Ingredientes */}
         <section className="space-y-4">

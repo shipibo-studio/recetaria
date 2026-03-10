@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     // Construir prompt para OpenRouter
-    const prompt = `Eres un chef profesional experto. Genera exactamente 6 recetas diferentes basadas en los siguientes ingredientes disponibles: ${ingredients}
+    const prompt = `Eres un chef profesional experto. Genera exactamente 3 recetas diferentes basadas en los siguientes ingredientes disponibles: ${ingredients}
 
 El nivel de habilidad del usuario es: ${skillLevel}
 Cantidad de comensales: ${servings} ${servings === 1 ? 'persona' : 'personas'}
@@ -65,7 +65,7 @@ Responde ÚNICAMENTE con un JSON válido en el siguiente formato (sin texto adic
       "title": "Nombre de la receta",
       "description": "Breve descripción de la receta en 1-2 líneas",
       "level": "${skillLevel}",
-      "time": "30 min",
+      "time": "hasta 60 mins",
       "ingredients": ["200g ingrediente 1", "1 unidad ingrediente 2"],
       "instructions": ["paso 1", "paso 2", "paso 3"]
     }
