@@ -2,7 +2,7 @@
 
 Aplicación web de sugerencias de recetas con IA.
 
-Versión actual: `v0.3.0`
+Versión actual: `v0.5.0`
 
 ## Stack técnico
 
@@ -19,8 +19,12 @@ Versión actual: `v0.3.0`
 - `/` Landing
 - `/login` Inicio de sesión con Neon Auth
 - `/app` Vista principal de recetas (protegida)
+- `/app/historial` Historial de búsquedas de recetas del usuario autenticado
+- `/app/favoritos` Recetas guardadas del usuario autenticado
 - `/app/ajustes` Configuración (OpenRouter API Key y modelo por usuario)
 - `/api/auth/[...path]` Handler de Neon Auth
+- `/api/user/history` API autenticada para listar/guardar historial de búsquedas
+- `/api/user/favorites` API autenticada para listar/guardar favoritos
 - `/api/user/openrouter` API autenticada para leer/guardar ajustes de OpenRouter
 
 ## Estructura relevante
@@ -83,6 +87,6 @@ O copia y pega el contenido desde [migrations/001_create_user_openrouter_setting
 
 Este proyecto usa SemVer (`MAJOR.MINOR.PATCH`).
 
-- Versión en `package.json`: `0.3.0`
-- Versión documentada en este `README.md`: `v0.3.0`
-- Versión visible en footer de `/app`: `v0.3.0`
+- Versión en `package.json`: `0.5.0`
+- Versión documentada en este `README.md`: `v0.5.0`
+- Versión visible en footer de `/app`: `v0.5.0`

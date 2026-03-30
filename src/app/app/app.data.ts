@@ -1,15 +1,15 @@
 export const skillLevels = ["Básico", "Intermedio", "Avanzado"]
 
 export const appDesktopNav = [
-  { label: "Historial", href: "#" },
-  { label: "Favoritos", href: "#" },
+  { label: "Historial", href: "/app/historial" },
+  { label: "Favoritos", href: "/app/favoritos" },
   { label: "Ajustes", href: "/app/ajustes" },
 ]
 
 export const appMobileNav = [
   { label: "Inicio", icon: "🏠", href: "/app" },
-  { label: "Guardados", icon: "🔖", href: "#" },
-  { label: "Anteriores", icon: "🕘", href: "#" },
+  { label: "Guardados", icon: "🔖", href: "/app/favoritos" },
+  { label: "Anteriores", icon: "🕘", href: "/app/historial" },
   { label: "Ajustes", icon: "⚙️", href: "/app/ajustes" },
 ]
 

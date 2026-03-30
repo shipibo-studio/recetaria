@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useSyncExternalStore } from "react"
+import { useMemo, useState, useSyncExternalStore } from "react"
 import { useParams, useRouter } from "next/navigation"
 
 interface Recipe {
@@ -45,9 +45,41 @@ export default function RecipeDetailPage() {
   }, [recipeJson])
 
   const loading = !isClient
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "error">("idle")
 
   const handleBack = () => {
     router.push('/app')
+  }
+
+  const handleSave = async () => {
+    if (!recipe || isSaving) {
+      return
+    }
+
+    setIsSaving(true)
+    setSaveStatus("idle")
+
+    try {
+      const response = await fetch("/api/user/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ recipe }),
+      })
+
+      if (!response.ok) {
+        throw new Error("No se pudo guardar en favoritos")
+      }
+
+      setSaveStatus("saved")
+    } catch (error) {
+      console.error("Error saving favorite recipe:", error)
+      setSaveStatus("error")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (loading) {
@@ -168,14 +200,20 @@ export default function RecipeDetailPage() {
 
         {/* Botones de acción */}
         <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-8">
-          <button className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 font-medium text-slate-700 transition-all hover:border-primary hover:text-primary">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 font-medium text-slate-700 transition-all hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <span>🔖</span>
-            <span>Guardar</span>
+            <span>{isSaving ? "Guardando..." : "Guardar"}</span>
           </button>
-          <button className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 font-medium text-slate-700 transition-all hover:border-primary hover:text-primary">
-            <span>📤</span>
-            <span>Compartir</span>
-          </button>
+          {saveStatus === "saved" && (
+            <p className="self-center text-sm font-medium text-green-600">Receta guardada en favoritos</p>
+          )}
+          {saveStatus === "error" && (
+            <p className="self-center text-sm font-medium text-red-600">No se pudo guardar la receta</p>
+          )}
         </div>
       </article>
     </main>

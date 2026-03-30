@@ -133,6 +133,24 @@ export default function AppPage() {
       // Guardar lista de IDs de recetas actuales
       localStorage.setItem('current-recipe-ids', JSON.stringify(recipeIds))
 
+      // Guardar historial de busqueda del usuario autenticado
+      try {
+        await fetch("/api/user/history", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ingredients: ingredients.trim(),
+            skillLevel: selectedSkill,
+            servings,
+            recipes: recipesWithIds,
+          }),
+        })
+      } catch (historyError) {
+        console.error("Error saving history:", historyError)
+      }
+
       setAiRecipes(recipesWithIds)
       setHasGenerated(true)
     } catch (err) {
@@ -183,8 +201,8 @@ export default function AppPage() {
                       <button
                         key={level}
                         className={`flex-1 rounded px-3 py-2 text-sm font-medium transition-all ${isActive
-                            ? "bg-white text-slate-900 shadow-sm"
-                            : "text-slate-500 hover:text-slate-900"
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-slate-900"
                           }`}
                         onClick={() => setSelectedSkill(level)}
                         type="button"
@@ -209,8 +227,8 @@ export default function AppPage() {
                       <button
                         key={option}
                         className={`flex-1 rounded px-3 py-2 text-sm font-medium transition-all ${isActive
-                            ? "bg-white text-slate-900 shadow-sm"
-                            : "text-slate-500 hover:text-slate-900"
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-500 hover:text-slate-900"
                           }`}
                         onClick={() => setServings(option)}
                         type="button"

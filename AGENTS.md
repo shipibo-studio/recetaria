@@ -10,3 +10,4 @@
 ## Versionado
 - Usar versionado semántico (SemVer: `MAJOR.MINOR.PATCH`).
 - Mantener la versión sincronizada entre `package.json`, `README.md` y el footer de la app.
+- Siempre que se actualice la versión, actualizar explícitamente la sección de versión en el `README.md`.
