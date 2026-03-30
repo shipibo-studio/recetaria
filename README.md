@@ -64,7 +64,10 @@ Define estas variables antes de ejecutar el proyecto:
 DATABASE_URL="postgres://..."
 NEON_AUTH_BASE_URL="https://<tu-auth-url>/neondb/auth"
 NEON_AUTH_COOKIE_SECRET="<secreto-de-al-menos-32-caracteres>"
+NEXT_PUBLIC_STATICFORMS_API_KEY="<tu-api-key-de-staticforms>"
 ```
+
+También se acepta `NEXT_PUBLIC_STATICFORMS_ACCESS_KEY` por compatibilidad.
 
 ## Migraciones de base de datos
 

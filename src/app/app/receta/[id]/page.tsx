@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useSyncExternalStore } from "react"
 import { useParams, useRouter } from "next/navigation"
 
 interface Recipe {
@@ -18,28 +18,37 @@ interface Recipe {
 export default function RecipeDetailPage() {
   const router = useRouter()
   const params = useParams()
-  const [recipe] = useState<Recipe | null>(() => {
-    // Cargar receta sincrónicamente en el estado inicial
-    if (typeof window !== 'undefined') {
-      const recipeId = params.id as string
-      const storedRecipe = localStorage.getItem(recipeId)
-      
-      if (storedRecipe) {
-        try {
-          return JSON.parse(storedRecipe)
-        } catch (error) {
-          console.error("Error parsing recipe:", error)
-        }
-      }
+  const recipeId = params.id as string
+  const isClient = useSyncExternalStore(
+    () => () => { },
+    () => true,
+    () => false
+  )
+
+  const recipeJson = useSyncExternalStore(
+    () => () => { },
+    () => localStorage.getItem(recipeId),
+    () => null
+  )
+
+  const recipe = useMemo<Recipe | null>(() => {
+    if (!recipeJson) {
+      return null
     }
-    return null
-  })
+
+    try {
+      return JSON.parse(recipeJson) as Recipe
+    } catch (error) {
+      console.error("Error parsing recipe:", error)
+      return null
+    }
+  }, [recipeJson])
+
+  const loading = !isClient
 
   const handleBack = () => {
     router.push('/app')
   }
-
-  const loading = false
 
   if (loading) {
     return (
@@ -90,7 +99,7 @@ export default function RecipeDetailPage() {
         <header className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tight md:text-5xl">{recipe.title}</h1>
           <p className="text-lg text-slate-500">{recipe.description}</p>
-          
+
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <span className="text-slate-400">Nivel:</span>

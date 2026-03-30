@@ -1,7 +1,9 @@
 import Link from "next/link"
 import Image from "next/image"
+import { WaitlistForm } from "./components/waitlist-form"
 
 export default function Home() {
+
   return (
     <>
       {/* Top Navigation */}
@@ -15,11 +17,8 @@ export default function Home() {
               <span className="text-xl font-bold tracking-tight text-slate-900">RecetarIA</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/login" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
-                Iniciar Sesión
-              </Link>
               <Link href="/login" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-primary/90 transition-all">
-                Pre-registro
+                Beta Privado
               </Link>
             </div>
           </div>
@@ -41,14 +40,6 @@ export default function Home() {
                 <p className="max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl">
                   ¿Qué hay en tu cocina? Ingresa tus ingredientes y deja que la IA diseñe tu próxima comida de forma personalizada y deliciosa.
                 </p>
-                <div className="flex flex-wrap gap-4">
-                  <Link href="/login" className="flex h-12 items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                    Iniciar Sesión
-                  </Link>
-                  <Link href="/app" className="flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-8 text-base font-bold text-slate-900 hover:bg-slate-50 transition-all">
-                    Ver Demo
-                  </Link>
-                </div>
               </div>
               <div className="relative">
                 <div className="aspect-square w-full rounded-3xl bg-gradient-to-br from-primary/20 via-primary/5 to-transparent p-4 ring-1 ring-slate-200">
@@ -120,7 +111,7 @@ export default function Home() {
         </section>
 
         {/* Waiting List / Pre-registro Section */}
-        <section className="py-24">
+        <section id="waitlist" className="py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 px-8 py-20 text-center shadow-2xl">
               <div className="relative z-10 mx-auto max-w-2xl">
@@ -128,24 +119,7 @@ export default function Home() {
                 <p className="mt-6 text-lg text-slate-300">
                   Sé el primero en probar la revolución culinaria. Ingresa tu correo y te notificaremos cuando estemos listos para cocinar contigo.
                 </p>
-                <form className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                  <div className="w-full max-w-md">
-                    <label className="sr-only" htmlFor="email-address">Correo electrónico</label>
-                    <input 
-                      autoComplete="email" 
-                      className="w-full rounded-xl border-0 bg-white/10 px-6 py-4 text-white ring-1 ring-inset ring-white/20 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm placeholder:text-slate-400" 
-                      id="email-address" 
-                      name="email" 
-                      placeholder="tu@correo.com" 
-                      required 
-                      type="email"
-                    />
-                  </div>
-                  <button className="flex w-full items-center justify-center rounded-xl bg-primary px-8 py-4 text-sm font-bold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto transition-all active:scale-95" type="submit">
-                    Notificarme
-                  </button>
-                </form>
-                <p className="mt-4 text-sm text-slate-400">Sin spam. Solo noticias deliciosas.</p>
+                <WaitlistForm />
               </div>
               {/* Background blobs */}
               <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-primary opacity-20 blur-3xl"></div>
@@ -166,7 +140,7 @@ export default function Home() {
               <span className="text-sm font-bold tracking-tight text-slate-900">RecetarIA</span>
             </div>
             <p className="text-sm text-slate-500">
-              © 2024 RecetarIA. Hecho con ❤️ para amantes de la cocina.
+              © 2026 RecetarIA. Hecho con ❤️ para amantes de la cocina.
             </p>
             <div className="flex gap-6">
               <a className="text-slate-400 hover:text-primary transition-colors" href="#">
