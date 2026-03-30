@@ -67,8 +67,6 @@ NEON_AUTH_COOKIE_SECRET="<secreto-de-al-menos-32-caracteres>"
 NEXT_PUBLIC_STATICFORMS_API_KEY="<tu-api-key-de-staticforms>"
 ```
 
-También se acepta `NEXT_PUBLIC_STATICFORMS_ACCESS_KEY` por compatibilidad.
-
 ## Migraciones de base de datos
 
 Ejecuta opcionalmente el script SQL en Neon Console para crear la tabla `user_openrouter_settings`:

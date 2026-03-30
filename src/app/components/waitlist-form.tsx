@@ -14,9 +14,7 @@ export function WaitlistForm() {
 
     const form = event.currentTarget
     const formData = new FormData(form)
-    const apiKey =
-      process.env.NEXT_PUBLIC_STATICFORMS_API_KEY ||
-      process.env.NEXT_PUBLIC_STATICFORMS_ACCESS_KEY
+    const apiKey = process.env.NEXT_PUBLIC_STATICFORMS_API_KEY
 
     if (!apiKey) {
       setStatus("error")
