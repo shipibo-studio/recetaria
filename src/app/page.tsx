@@ -1,11 +1,94 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { WaitlistForm } from "./components/waitlist-form"
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://recetaria-six.vercel.app"
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: "RecetarIA | Recetas con IA según tus ingredientes",
+  description:
+    "Descubre recetas personalizadas con IA usando los ingredientes que ya tienes en casa. Ajusta nivel, comensales y guarda tus favoritas.",
+  keywords: [
+    "recetas con IA",
+    "generador de recetas",
+    "recetas por ingredientes",
+    "cocina inteligente",
+    "recetas personalizadas",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "RecetarIA | Recetas con IA según tus ingredientes",
+    description:
+      "Genera recetas personalizadas con IA, guarda favoritos y consulta historial de búsquedas en un solo lugar.",
+    url: "/",
+    siteName: "RecetarIA",
+    locale: "es_PE",
+    type: "website",
+    images: [
+      {
+        url: "/social.jpg",
+        width: 1200,
+        height: 630,
+        alt: "RecetarIA — Recetas con IA según tus ingredientes",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RecetarIA | Recetas con IA según tus ingredientes",
+    description:
+      "Genera recetas con IA usando ingredientes reales de tu cocina y ajusta por nivel y comensales.",
+    images: ["/social.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
+
 export default function Home() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: "RecetarIA",
+        url: SITE_URL,
+        inLanguage: "es",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${SITE_URL}/app`,
+          "query-input": "required name=ingredients",
+        },
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: "RecetarIA",
+        applicationCategory: "LifestyleApplication",
+        operatingSystem: "Web",
+        url: SITE_URL,
+        description:
+          "Aplicación web para generar recetas con IA según ingredientes disponibles, nivel de habilidad y cantidad de comensales.",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+      },
+    ],
+  }
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       {/* Top Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
